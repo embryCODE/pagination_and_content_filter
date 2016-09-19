@@ -117,3 +117,16 @@ body{
       background-color: #4ba6c3;
       color: #fff;
     }
+    
+/* ADDED STYLING */
+
+.pagination li{
+	margin-right: 5px;
+}
+
+#range-indicator {
+	color: #888;
+	font-size: 14px;
+	display: inline-block;
+	padding: 5px 0 0 10px;
+}
