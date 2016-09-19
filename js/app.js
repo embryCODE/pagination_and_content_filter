@@ -1,8 +1,8 @@
 var $students = $(".student-list li"); // Total students regardless of search selection.
 var searchResults = $students; // Total students selected by search. Initialized as total students.
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
-var $studentName = $(".student-details h3");
-var $studentEmail = $(".email");
+var $studentName = $(".student-details h3"); // Find student name
+var $studentEmail = $(".email"); // Find student email
 
 
 
@@ -10,15 +10,14 @@ var $studentEmail = $(".email");
 var $searchDiv = $('<div class="student-search"></div>');
 var $searchInput = $('<input placeholder="Search for students...">');
 var $searchButton = $('<button>Search</button>');
-
 $searchDiv.append($searchInput);
 $searchDiv.append($searchButton);
-
+// $searchInput.change(setActivePage);
 $(".page-header").append($searchDiv);
 
-// Create pagination div
+// Create (and update) pagination div
 var createPaginationDiv = function() {
-	
+	// First remove previous pagination div.
 	$(".pagination").remove();
 	
 	// Calculate number of pages necessary based on students in search results and students per page.
@@ -58,13 +57,13 @@ var createPaginationDiv = function() {
 	}
 }
 
-// Displays students with necessary pagination
+// Display students
 var displayStudents = function(startingStudent) {
 	$students.hide(); // Hides all students first.
 	searchResults.slice(startingStudent, (startingStudent + studentsPerPage)).show();
 }
 
-// Selects page by adding .active class and calls displayStudents with starting student
+// Select page by adding .active class and calls displayStudents with starting student
 var setActivePage = function(e) {
 	e.preventDefault();
 	var linkNumber = this.text;
@@ -79,24 +78,26 @@ var setActivePage = function(e) {
 
 // Search button event listener
 $(".student-search button").click(function() {
-	var $foundPerson = $(""); 
-	var searchInputText = $(".student-search input").val().toLowerCase();
+	var $foundPersons = $(""); // Create empty object to store found persons
+	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case
+	
+	// Loop through each student and checks name and email for match with searchInputText.
 	$students.each(function() {
-		var studentNameText = $(this).find($studentName).text().toLowerCase();
-		var studentEmailText = $(this).find($studentEmail).text().toLowerCase();
+		var studentNameText = $(this).find($studentName).text().toLowerCase(); // Get name of current student in loop.
+		var studentEmailText = $(this).find($studentEmail).text().toLowerCase(); // Get email of current student in loop.
+		// If searchInputText matches student name or email, store current student in $foundPersons variable.
 		if (studentNameText.indexOf(searchInputText) !== -1 || studentEmailText.indexOf(searchInputText) !== -1) {
-			console.log("found it");
-			$foundPerson = $foundPerson.add(this);
+			$foundPersons = $foundPersons.add(this);
 		}
 	});
-	searchResults = $foundPerson;
-	createPaginationDiv();
-	displayStudents(0);
+	searchResults = $foundPersons; // $foundPersons becomes searchResults for displaying on page.
+	createPaginationDiv(); // Update the pagination div with searchResults as input to create necessary number of pages.
+	displayStudents(0); // Display students within the new created pagination.
 });
 
 
 
-// Create pagination div. Will not create if searchResults is <= 10.
+// Create initial pagination div. Will not create if searchResults is <= 10.
 createPaginationDiv();
 
 // Show initial page of students
