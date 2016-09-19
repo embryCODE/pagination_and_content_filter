@@ -24,10 +24,19 @@ var createPaginationDiv = function() {
 	$(".student-list").append($paginationDiv);
 }
 
+// Set .active class on chosen page
 var setActivePage = function(activePage) {
 	$(".pagination ul li a").removeClass("active"); // First remove .active class from all page links
 	$(".pagination ul li a").eq(activePage - 1).addClass("active"); // "activePage - 1" to adjust for zero-based index
 }
+
+// "Turn the page" to the page indicated
+var turnThePage = function(page) {
+	
+	setActivePage(page);
+}
+
+
 
 // If numberOfStudents is > 10 add paginationDiv and set first page link to .active
 if (numberOfStudents > studentsPerPage) {
@@ -35,7 +44,11 @@ if (numberOfStudents > studentsPerPage) {
 	setActivePage(1);
 }
 
-
+$(".pagination ul li a").click(function(e) {
+	e.preventDefault();
+	var whichPageLinkClicked = $(this).text();
+	turnThePage(whichPageLinkClicked);
+});
 
 
 
