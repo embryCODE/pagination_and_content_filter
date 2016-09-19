@@ -19,6 +19,8 @@ $(".page-header").append($searchDiv);
 // Create pagination div
 var createPaginationDiv = function() {
 	
+	$(".pagination").remove();
+	
 	// Calculate number of pages necessary based on students in search results and students per page.
 	var numberOfStudents = searchResults.length;
 	var necessaryPages = Math.ceil(numberOfStudents / studentsPerPage);
@@ -62,7 +64,7 @@ var displayStudents = function(startingStudent) {
 	searchResults.slice(startingStudent, (startingStudent + studentsPerPage)).show();
 }
 
-// Selects page by adding .active class and calls showRangeOfStudents with starting student
+// Selects page by adding .active class and calls displayStudents with starting student
 var setActivePage = function(e) {
 	e.preventDefault();
 	var linkNumber = this.text;
@@ -88,6 +90,7 @@ $(".student-search button").click(function() {
 		}
 	});
 	searchResults = $foundPerson;
+	createPaginationDiv();
 	displayStudents(0);
 });
 
