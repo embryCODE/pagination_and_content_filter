@@ -3,6 +3,17 @@ var searchSelected = $students; // Total students selected by search. Initialize
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
 
 
+
+// Create search div
+var $searchDiv = $('<div class="student-search"></div>');
+var $searchInput = $('<input placeholder="Search for students...">');
+var $searchButton = $('<button>Search</button>');
+
+$searchDiv.append($searchInput);
+$searchDiv.append($searchButton);
+
+$(".page-header").append($searchDiv);
+
 // Create pagination div
 var createPaginationDiv = function() {
 	
@@ -26,6 +37,12 @@ var createPaginationDiv = function() {
 		for (var i = 0; i < necessaryPages; i++) {
 			$paginationLi = $("<li></li>");
 			$paginationLink = $('<a href=#>' + (i + 1) + '</a>')
+			
+			// First link created has .active class
+			if (i === 0) {
+				$paginationLink.addClass("active");
+			}
+			
 			$paginationLi.append($paginationLink);
 			$paginationUl.append($paginationLi);
 			
@@ -37,46 +54,32 @@ var createPaginationDiv = function() {
 	}
 }
 
-// Show a range of students
-var showRangeOfStudents = function(low, high) {
+// Displays students with necessary pagination
+var displayStudents = function(startingStudent) {
 	$students.hide(); // Hides all students first.
-	$students.slice(low, high).show();
+	$students.slice(startingStudent, (startingStudent + studentsPerPage)).show();
 }
 
-// "Turn the page" to the page indicated by pagination click handler
-var turnThePage = function(page) {
-	var startIndex;
-	var endIndex;
-	
-	// Set first and last student to show based on studentsPerPage
-	if (page === 1) {
-		startIndex = 0; // If on page one, the first student is in index 0
-		endIndex = studentsPerPage; // The slice method will actually stop one lower than this high number. 0-9.
-	} else {
-		startIndex = (page * studentsPerPage) - studentsPerPage;
-		endIndex = startIndex + studentsPerPage;
-	}
-	
-	showRangeOfStudents(startIndex, endIndex);
-}
-
-// Set .active link
-var setActivePage = function(activePage) {
-	// Pagination click handler
-$(".pagination ul li a").on("click", function(e) {
+// Selects page by adding .active class and calls showRangeOfStudents with starting student
+var setActivePage = function(e) {
 	e.preventDefault();
-	var whichPageLinkClicked = parseInt($(this).text());
-	setActivePage(whichPageLinkClicked);
-	turnThePage(whichPageLinkClicked);
-});
-	$(".pagination ul li a").removeClass("active"); // First remove .active class from all page links
-	$(".pagination ul li a").eq(activePage - 1).addClass("active"); // "activePage - 1" to adjust for zero-based index
+	var linkNumber = this.text;
+	var startingStudent = (linkNumber - 1) * studentsPerPage;
+	
+	// Remove .active class from previous page link then add .active class to clicked page link.
+	$("div.pagination a.active").removeClass("active");
+	$(this).addClass("active");
+	
+	displayStudents(startingStudent);
 }
 
 
+
+// Create pagination div. Will not create if searchSelected is <= 10.
 createPaginationDiv();
-setActivePage(1);
-turnThePage(1);
+
+// Show initial page of students
+displayStudents(0);
 
 
 
