@@ -17,18 +17,22 @@ var createPaginationDiv = function() {
 	var ulContent = ''; // Creates empty string for building ul content in loop
 
 	for (var i = 0; i < necessaryPages; i++) {
-		ulContent += "<li><a>" + (i + 1) + "</a></li>"; // Builds html of ul, incrementing the link text
+		ulContent += "<li><a href=#>" + (i + 1) + "</a></li>"; // Builds html of ul, incrementing the link text
 	}
 	
 	$paginationDiv.find("ul").append(ulContent);
 	$(".student-list").append($paginationDiv);
 }
 
+var setActivePage = function(activePage) {
+	$(".pagination ul li a").removeClass("active"); // First remove .active class from all page links
+	$(".pagination ul li a").eq(activePage - 1).addClass("active"); // "activePage - 1" to adjust for zero-based index
+}
 
-
-// If numberOfStudents is > 10 add paginationDiv.
+// If numberOfStudents is > 10 add paginationDiv and set first page link to .active
 if (numberOfStudents > studentsPerPage) {
 	createPaginationDiv();
+	setActivePage(1);
 }
 
 
