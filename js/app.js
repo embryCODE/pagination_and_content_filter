@@ -8,7 +8,7 @@ var necessaryPages = Math.ceil(numberOfStudents / studentsPerPage); // Necessary
 // Show a range of students
 var showRangeOfStudents = function(low, high) {
 	$students.hide(); // Hides all students first.
-	$students.slice(low, (high + 1)).show();
+	$students.slice(low, high).show();
 }
 
 // Create pagination div
@@ -32,21 +32,34 @@ var setActivePage = function(activePage) {
 
 // "Turn the page" to the page indicated
 var turnThePage = function(page) {
+	var startIndex;
+	var endIndex;
 	
-	setActivePage(page);
+	// Set first and last student to show based on studentsPerPage
+	if (page === 1) {
+		startIndex = 0; // If on page one, the first student is in index 0
+		endIndex = studentsPerPage; // The slice method will actually stop one lower than this high number. 0-9.
+	} else {
+		startIndex = (page * studentsPerPage) - studentsPerPage;
+		endIndex = startIndex + studentsPerPage;
+	}
+	
+	showRangeOfStudents(startIndex, endIndex);
 }
 
 
 
-// If numberOfStudents is > 10 add paginationDiv and set first page link to .active
+// If numberOfStudents is > studentsPerPage add paginationDiv and set first page link to .active
 if (numberOfStudents > studentsPerPage) {
 	createPaginationDiv();
 	setActivePage(1);
+	turnThePage(1);
 }
 
-$(".pagination ul li a").click(function(e) {
+$(".pagination ul li a").on("click", function(e) {
 	e.preventDefault();
-	var whichPageLinkClicked = $(this).text();
+	var whichPageLinkClicked = parseInt($(this).text());
+	setActivePage(whichPageLinkClicked);
 	turnThePage(whichPageLinkClicked);
 });
 
