@@ -1,3 +1,12 @@
+/*
+	
+Author: Mason Embry, mason@embrycode.com
+Created: 9/19/2016
+
+Tested on current versions of Chrome, Safari, and Firefox.
+	
+*/
+
 var $students = $(".student-list li"); // Total students regardless of search selection.
 var searchResults = $students; // Total students selected by search. Initialized as total students.
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
@@ -11,8 +20,10 @@ var $searchDiv = $('<div class="student-search"></div>');
 var $searchInput = $('<input placeholder="Search for students...">');
 var $searchButton = $('<button>Search</button>');
 $searchDiv.append($searchInput);
-$searchDiv.append($searchButton);
-// $searchInput.change(setActivePage);
+
+// No need for the search button with instant search results.
+// $searchDiv.append($searchButton);
+
 $(".page-header").append($searchDiv);
 
 // Create (and update) pagination div
@@ -77,7 +88,7 @@ var setActivePage = function(e) {
 }
 
 // Search button event listener
-$(".student-search button").click(function() {
+$(".student-search input").keyup(function() {
 	var $foundPersons = $(""); // Create empty object to store found persons
 	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case
 	
