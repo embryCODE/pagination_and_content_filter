@@ -30,7 +30,7 @@ var setActivePage = function(activePage) {
 	$(".pagination ul li a").eq(activePage - 1).addClass("active"); // "activePage - 1" to adjust for zero-based index
 }
 
-// "Turn the page" to the page indicated
+// "Turn the page" to the page indicated by pagination click handler
 var turnThePage = function(page) {
 	var startIndex;
 	var endIndex;
@@ -56,6 +56,7 @@ if (numberOfStudents > studentsPerPage) {
 	turnThePage(1);
 }
 
+// Pagination click handler
 $(".pagination ul li a").on("click", function(e) {
 	e.preventDefault();
 	var whichPageLinkClicked = parseInt($(this).text());
