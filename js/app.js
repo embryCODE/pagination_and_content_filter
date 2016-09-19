@@ -12,6 +12,7 @@ var searchResults = $students; // Total students selected by search. Initialized
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
 var $studentName = $(".student-details h3"); // Find student name
 var $studentEmail = $(".email"); // Find student email
+var $rangeIndicator = $('<div id="range-indicator"></div>');
 
 
 
@@ -71,7 +72,28 @@ var createPaginationDiv = function() {
 // Display students
 var displayStudents = function(startingStudent) {
 	$students.hide(); // Hides all students first.
-	searchResults.slice(startingStudent, (startingStudent + studentsPerPage)).show();
+	
+	var endingStudent;
+	
+	// Set endingStudent to startingStudent + 10 unless at the end of the searchResults
+	if ((startingStudent + studentsPerPage) >= searchResults.length) {
+		endingStudent = searchResults.length;
+	} else {
+		endingStudent = startingStudent + 10;
+	}
+	
+	// Show selected students
+	searchResults.slice(startingStudent, endingStudent).show();
+	
+	// Update range indicator
+	if (searchResults.length === 0) {
+		$rangeIndicator.html("No students found.");
+	} else {
+		$rangeIndicator.html(searchResults.length + " student(s) found. Displaying " + (startingStudent + 1) + " - " + endingStudent + ".");
+	}
+	
+	// Write range indicator to page after h2.
+	$(".page-header h2").after($rangeIndicator);
 }
 
 // Select page by adding .active class and calls displayStudents with starting student
