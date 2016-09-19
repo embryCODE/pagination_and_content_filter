@@ -102,7 +102,6 @@ body{
  
   .pagination li{
     display: inline;
-    margin-right: 5px;
   }
 
     .pagination li a{
@@ -120,6 +119,10 @@ body{
     }
     
 /* ADDED STYLING */
+
+.pagination li{
+	margin-right: 5px;
+}
 
 #range-indicator {
 	color: #888;

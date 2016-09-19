@@ -38,7 +38,7 @@ var createPaginationDiv = function() {
 	
 	// Initialize new elements to build pagination div.	
 	var $paginationDiv = $('<div class="pagination"></div>')
-	var $paginationUl = $("<ul></ul>");
+	var $paginationUl = $('<ul></ul>');
 	var $paginationLi;
 	var $paginationLink;
 	
@@ -50,7 +50,7 @@ var createPaginationDiv = function() {
 		
 		// Loop to create li and a.
 		for (var i = 0; i < necessaryPages; i++) {
-			$paginationLi = $("<li></li>");
+			$paginationLi = $('<li></li>');
 			$paginationLink = $('<a href=#>' + (i + 1) + '</a>')
 			
 			// First link created has .active class
@@ -83,7 +83,7 @@ var displayStudents = function(startingStudent) {
 	}
 	
 	// Show selected students
-	searchResults.slice(startingStudent, endingStudent).show();
+	searchResults.slice(startingStudent, endingStudent).fadeIn();
 	
 	// Update range indicator
 	if (searchResults.length === 0) {
@@ -135,11 +135,4 @@ createPaginationDiv();
 
 // Show initial page of students
 displayStudents(0);
-
-
-
-
-
-
-
 
