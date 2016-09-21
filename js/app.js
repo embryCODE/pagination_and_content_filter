@@ -17,12 +17,14 @@ var $rangeIndicator = $('<div id="range-indicator"></div>'); // Initialize range
 
 
 // Create search div.
-var $searchDiv = $('<div class="student-search"></div>');
-var $searchInput = $('<input placeholder="Search for students...">');
-// var $searchButton = $('<button>Search</button>'); // No need for the search button with instant search results.
-$searchDiv.append($searchInput);
-// $searchDiv.append($searchButton); // No need for the search button with instant search results.
-$(".page-header").append($searchDiv);
+var createSearchDiv = function() {
+	var $searchDiv = $('<div class="student-search"></div>');
+	var $searchInput = $('<input placeholder="Search for students...">');
+	// var $searchButton = $('<button>Search</button>'); // No need for the search button with instant search results.
+	$searchDiv.append($searchInput);
+	// $searchDiv.append($searchButton); // No need for the search button with instant search results.
+	$(".page-header").append($searchDiv);
+};
 
 // Create (or update) pagination div.
 var createPaginationDiv = function() {
@@ -104,8 +106,14 @@ var setActivePage = function(e) {
 	displayStudents(startingStudent);
 };
 
+// Create search div.
+createSearchDiv();
+
 // Search button event listener
-$(".student-search input").keyup(function() { // Listens for keyup on input instead of click on button.
+$(".student-search input").on("input", function() {
+
+	// NOTE: I tried listening for "keyup" but the arrow keys triggered the event. Listening for "change" was fine except you had to hit enter to do the search. on("input") was the best option to achieve a search on every keystroke while ignoring arrow keys.
+
 	var $foundPersons = $(""); // Create empty object to store found persons.
 	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case.
 
