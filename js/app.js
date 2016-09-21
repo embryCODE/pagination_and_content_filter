@@ -8,7 +8,6 @@ Tested on current versions of Chrome, Safari, and Firefox.
 */
 
 var $students = $(".student-list li"); // All students regardless of search selection.
-var searchResults = $students; // All students selected by search. Initialized as all students.
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
 var $studentName = $(".student-details h3"); // Find h3 containing student name.
 var $studentEmail = $(".email"); // Find student email.
@@ -25,7 +24,7 @@ var createSearchDiv = function() {
 	// $searchDiv.append($searchButton); // No need for the search button with instant search results.
 	$(".page-header").append($searchDiv);
 	// Bind searchStudents to any change on the search input.
-	$(".student-search input").on("input", searchStudents);
+	$(".student-search input").on("input", searchAndUpdate);
 		// NOTE: I tried listening for "keyup" but the arrow keys triggered the event. Listening for "change" was fine except you had to hit enter to do the search. on("input") was the best option to achieve a search on every keystroke while ignoring arrow keys.
 };
 
@@ -46,18 +45,18 @@ var searchStudents = function() {
 		}
 	});
 
-	searchResults = $foundPersons; // $foundPersons becomes searchResults for displaying on page.
-	createPaginationDiv(); // Update the pagination div with searchResults as input to create necessary number of pages.
-	displayStudents(0); // Display students within the newly created pagination, starting on the first one.
+	return $foundPersons;
 };
 
-// Function to create (or update) pagination div.
-var createPaginationDiv = function() {
+// Function to search then update pagination div.
+var searchAndUpdate = function() {
+	var studentsToDisplay = searchStudents();
+
 	// First, remove previous pagination div.
 	$(".pagination").remove();
 
 	// Calculate number of pages necessary.
-	var necessaryPages = Math.ceil(searchResults.length / studentsPerPage);
+	var necessaryPages = Math.ceil(studentsToDisplay.length / studentsPerPage);
 
 	// Initialize new elements to build pagination div.
 	var $paginationDiv = $('<div class="pagination"></div>');
@@ -90,28 +89,31 @@ var createPaginationDiv = function() {
 
 		$(".student-list").append($paginationDiv);
 	}
+	turnPage(0); // Sets page to page 1.
 };
 
 // Display students
-var displayStudents = function(startingStudent) {
+var turnPage = function(startingStudent) {
+	var studentsToDisplay = searchStudents();
+
 	$students.hide(); // Hides all students first.
 
 	// Set endingStudent to startingStudent + 10 unless at the end of the searchResults
 	var endingStudent;
-	if ((startingStudent + studentsPerPage) >= searchResults.length) {
-		endingStudent = searchResults.length;
+	if ((startingStudent + studentsPerPage) >= studentsToDisplay.length) {
+		endingStudent = studentsToDisplay.length;
 	} else {
 		endingStudent = startingStudent + 10;
 	}
 
 	// Show selected students
-	searchResults.slice(startingStudent, endingStudent).fadeIn(); // fadeIn() creates the subtle animation.
+	studentsToDisplay.slice(startingStudent, endingStudent).fadeIn(); // fadeIn() creates the subtle animation.
 
 	// Update range indicator
-	if (searchResults.length === 0) {
+	if (studentsToDisplay.length === 0) {
 		$rangeIndicator.html("No students found.");
 	} else {
-		$rangeIndicator.html(searchResults.length + " student(s) found. Displaying " + (startingStudent + 1) + " - " + endingStudent + ".");
+		$rangeIndicator.html(studentsToDisplay.length + " student(s) found. Displaying " + (startingStudent + 1) + " - " + endingStudent + ".");
 	}
 
 	// Write range indicator to page after h2.
@@ -128,7 +130,7 @@ var setActivePage = function(e) {
 	$("div.pagination a.active").removeClass("active");
 	$(this).addClass("active");
 
-	displayStudents(startingStudent);
+	turnPage(startingStudent);
 };
 
 
@@ -137,7 +139,4 @@ var setActivePage = function(e) {
 createSearchDiv();
 
 // Create initial pagination div. Will not create if searchResults is <= 10.
-createPaginationDiv();
-
-// Show initial page of students, starting on the first one.
-displayStudents(0);
+searchAndUpdate();
