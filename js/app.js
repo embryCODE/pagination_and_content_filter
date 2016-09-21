@@ -16,7 +16,7 @@ var $rangeIndicator = $('<div id="range-indicator"></div>'); // Initialize range
 
 
 
-// Create search div.
+// Function to create search div.
 var createSearchDiv = function() {
 	var $searchDiv = $('<div class="student-search"></div>');
 	var $searchInput = $('<input placeholder="Search for students...">');
@@ -24,9 +24,34 @@ var createSearchDiv = function() {
 	$searchDiv.append($searchInput);
 	// $searchDiv.append($searchButton); // No need for the search button with instant search results.
 	$(".page-header").append($searchDiv);
+	// Bind searchStudents to any change on the search input.
+	$(".student-search input").on("input", searchStudents);
+		// NOTE: I tried listening for "keyup" but the arrow keys triggered the event. Listening for "change" was fine except you had to hit enter to do the search. on("input") was the best option to achieve a search on every keystroke while ignoring arrow keys.
 };
 
-// Create (or update) pagination div.
+// Function to search students.
+var searchStudents = function() {
+
+	var $foundPersons = $(""); // Create empty object to store found persons.
+	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case.
+
+	// Loop through each student and check name and email for match with searchInputText.
+	$students.each(function() {
+		var studentNameText = $(this).find($studentName).text().toLowerCase(); // Get name of current student in loop in lower case.
+		var studentEmailText = $(this).find($studentEmail).text().toLowerCase(); // Get email of current student in loop in lower case.
+
+		// If searchInputText matches student name or email, store current student in $foundPersons variable.
+		if (studentNameText.indexOf(searchInputText) !== -1 || studentEmailText.indexOf(searchInputText) !== -1) {
+			$foundPersons = $foundPersons.add(this);
+		}
+	});
+
+	searchResults = $foundPersons; // $foundPersons becomes searchResults for displaying on page.
+	createPaginationDiv(); // Update the pagination div with searchResults as input to create necessary number of pages.
+	displayStudents(0); // Display students within the newly created pagination, starting on the first one.
+};
+
+// Function to create (or update) pagination div.
 var createPaginationDiv = function() {
 	// First, remove previous pagination div.
 	$(".pagination").remove();
@@ -106,34 +131,10 @@ var setActivePage = function(e) {
 	displayStudents(startingStudent);
 };
 
+
+
 // Create search div.
 createSearchDiv();
-
-// Search button event listener
-$(".student-search input").on("input", function() {
-
-	// NOTE: I tried listening for "keyup" but the arrow keys triggered the event. Listening for "change" was fine except you had to hit enter to do the search. on("input") was the best option to achieve a search on every keystroke while ignoring arrow keys.
-
-	var $foundPersons = $(""); // Create empty object to store found persons.
-	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case.
-
-	// Loop through each student and check name and email for match with searchInputText.
-	$students.each(function() {
-		var studentNameText = $(this).find($studentName).text().toLowerCase(); // Get name of current student in loop in lower case.
-		var studentEmailText = $(this).find($studentEmail).text().toLowerCase(); // Get email of current student in loop in lower case.
-
-		// If searchInputText matches student name or email, store current student in $foundPersons variable.
-		if (studentNameText.indexOf(searchInputText) !== -1 || studentEmailText.indexOf(searchInputText) !== -1) {
-			$foundPersons = $foundPersons.add(this);
-		}
-	});
-
-	searchResults = $foundPersons; // $foundPersons becomes searchResults for displaying on page.
-	createPaginationDiv(); // Update the pagination div with searchResults as input to create necessary number of pages.
-	displayStudents(0); // Display students within the newly created pagination, starting on the first one.
-});
-
-
 
 // Create initial pagination div. Will not create if searchResults is <= 10.
 createPaginationDiv();
