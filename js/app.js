@@ -2,17 +2,14 @@
 
 Author: Mason Embry, mason@embrycode.com
 Created: 9/19/2016
+Last updated: 9/21/2016
 
 Tested on current versions of Chrome, Safari, and Firefox.
 
 */
 
-var $students = $(".student-list li"); // All students regardless of search selection.
+var $students = $(".student-list li"); // Finds all students.
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
-var $studentName = $(".student-details h3"); // Find h3 containing student name.
-var $studentEmail = $(".email"); // Find student email.
-var $rangeIndicator = $('<div id="range-indicator"></div>'); // Initialize range indicator div.
-
 
 
 // Function to create search div.
@@ -30,6 +27,8 @@ var createSearchDiv = function() {
 
 // Function to search students.
 var searchStudents = function() {
+	var $studentName = $(".student-details h3"); // Find h3 containing student name.
+	var $studentEmail = $(".email"); // Find student email.
 
 	var $foundPersons = $(""); // Create empty object to store found persons.
 	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case.
@@ -48,7 +47,7 @@ var searchStudents = function() {
 	return $foundPersons;
 };
 
-// Function to search then update pagination div.
+// Function to call search function then update pagination div.
 var searchAndUpdate = function() {
 	var studentsToDisplay = searchStudents();
 
@@ -92,7 +91,7 @@ var searchAndUpdate = function() {
 	turnPage(0); // Sets page to page 1.
 };
 
-// Display students
+// Select a page of students and update range indicator.
 var turnPage = function(startingStudent) {
 	var studentsToDisplay = searchStudents();
 
@@ -110,6 +109,8 @@ var turnPage = function(startingStudent) {
 	studentsToDisplay.slice(startingStudent, endingStudent).fadeIn(); // fadeIn() creates the subtle animation.
 
 	// Update range indicator
+	$("#range-indicator").remove(); // Remove previous range indicator.
+	var $rangeIndicator = $('<div id="range-indicator"></div>'); // Initialize range indicator div.
 	if (studentsToDisplay.length === 0) {
 		$rangeIndicator.html("No students found.");
 	} else {
