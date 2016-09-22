@@ -2,35 +2,61 @@
 
 Author: Mason Embry, mason@embrycode.com
 Created: 9/19/2016
+Last updated: 9/21/2016
 
 Tested on current versions of Chrome, Safari, and Firefox.
 
 */
 
-var $students = $(".student-list li"); // All students regardless of search selection.
-var searchResults = $students; // All students selected by search. Initialized as all students.
+var $STUDENTS = $(".student-list li"); // Finds all students.
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
-var $studentName = $(".student-details h3"); // Find h3 containing student name.
-var $studentEmail = $(".email"); // Find student email.
-var $rangeIndicator = $('<div id="range-indicator"></div>'); // Initialize range indicator div.
 
 
 
-// Create search div.
-var $searchDiv = $('<div class="student-search"></div>');
-var $searchInput = $('<input placeholder="Search for students...">');
-// var $searchButton = $('<button>Search</button>'); // No need for the search button with instant search results.
-$searchDiv.append($searchInput);
-// $searchDiv.append($searchButton); // No need for the search button with instant search results.
-$(".page-header").append($searchDiv);
+// Function to create search div.
+var createSearchDiv = function() {
+	var $searchDiv = $('<div class="student-search"></div>');
+	var $searchInput = $('<input placeholder="Search for students...">');
+	// var $searchButton = $('<button>Search</button>'); // No need for the search button with instant search results.
+	$searchDiv.append($searchInput);
+	// $searchDiv.append($searchButton); // No need for the search button with instant search results.
+	$(".page-header").append($searchDiv);
 
-// Create (or update) pagination div.
-var createPaginationDiv = function() {
-	// First, remove previous pagination div.
-	$(".pagination").remove();
+	// Bind searchStudents to any change on the search input.
+	$(".student-search input").on("input", searchAndUpdate);
+		// NOTE: I tried listening for "keyup" but the arrow keys triggered the event. Listening for "change" was fine except you had to hit enter to do the search. on("input") was the best option to achieve a search on every keystroke while ignoring arrow keys.
+};
+
+// Function to search students. Returns found students.
+var searchStudents = function() {
+	var $studentName = $(".student-details h3"); // Find h3 containing student name.
+	var $studentEmail = $(".email"); // Find student email.
+
+	var $foundStudents = $(""); // Create empty object to store found persons.
+	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case.
+
+	// Loop through each student and check name and email for match with searchInputText.
+	$STUDENTS.each(function() {
+		var studentNameText = $(this).find($studentName).text().toLowerCase(); // Get name of current student in loop in lower case.
+		var studentEmailText = $(this).find($studentEmail).text().toLowerCase(); // Get email of current student in loop in lower case.
+
+		// If searchInputText matches student name or email, store current student in $foundStudents variable.
+		if (studentNameText.indexOf(searchInputText) !== -1 || studentEmailText.indexOf(searchInputText) !== -1) {
+			$foundStudents = $foundStudents.add(this);
+		}
+	});
+
+	return $foundStudents;
+};
+
+// Function to call search function then update pagination div.
+var searchAndUpdate = function() {
+	var studentsToDisplay = searchStudents(); // Actual search happens here.
+
+	$(".pagination").remove(); // Remove previous pagination div.
 
 	// Calculate number of pages necessary.
-	var necessaryPages = Math.ceil(searchResults.length / studentsPerPage);
+	var necessaryPages = Math.ceil(studentsToDisplay.length / studentsPerPage);
 
 	// Initialize new elements to build pagination div.
 	var $paginationDiv = $('<div class="pagination"></div>');
@@ -61,37 +87,44 @@ var createPaginationDiv = function() {
 			$paginationLink.click(setActivePage);
 		}
 
+		// Append the pagination div to the end of the student list.
 		$(".student-list").append($paginationDiv);
 	}
+	// Set page to page 1. Without this, a list of all students is returned.
+	turnPage(0);
 };
 
-// Display students
-var displayStudents = function(startingStudent) {
-	$students.hide(); // Hides all students first.
+// Select a page of students and update range indicator.
+var turnPage = function(startingStudent) {
+	var studentsToDisplay = searchStudents();
 
-	// Set endingStudent to startingStudent + 10 unless at the end of the searchResults
+	$STUDENTS.hide(); // Hides all students first.
+
+	// Set endingStudent to startingStudent + 10 unless at the end of the searchResults.
 	var endingStudent;
-	if ((startingStudent + studentsPerPage) >= searchResults.length) {
-		endingStudent = searchResults.length;
+	if ((startingStudent + studentsPerPage) >= studentsToDisplay.length) {
+		endingStudent = studentsToDisplay.length;
 	} else {
 		endingStudent = startingStudent + 10;
 	}
 
-	// Show selected students
-	searchResults.slice(startingStudent, endingStudent).fadeIn(); // fadeIn() creates the subtle animation.
+	// Show selected students by fading in.
+	studentsToDisplay.slice(startingStudent, endingStudent).fadeIn(); // fadeIn() creates the subtle animation.
 
-	// Update range indicator
-	if (searchResults.length === 0) {
+	// Update range indicator.
+	$("#range-indicator").remove(); // Remove previous range indicator.
+	var $rangeIndicator = $('<div id="range-indicator"></div>'); // Initialize range indicator div.
+	if (studentsToDisplay.length === 0) {
 		$rangeIndicator.html("No students found.");
 	} else {
-		$rangeIndicator.html(searchResults.length + " student(s) found. Displaying " + (startingStudent + 1) + " - " + endingStudent + ".");
+		$rangeIndicator.html(studentsToDisplay.length + " student(s) found. Displaying " + (startingStudent + 1) + " - " + endingStudent + ".");
 	}
 
 	// Write range indicator to page after h2.
 	$(".page-header h2").after($rangeIndicator);
 };
 
-// Select page by adding .active class and calling displayStudents with starting student.
+// Add .active class and turn page. Pass startingStudent to turnPage as an argument.
 var setActivePage = function(e) {
 	e.preventDefault();
 	var linkNumber = this.text; // Get desired page using text of clicked link.
@@ -101,34 +134,13 @@ var setActivePage = function(e) {
 	$("div.pagination a.active").removeClass("active");
 	$(this).addClass("active");
 
-	displayStudents(startingStudent);
+	turnPage(startingStudent);
 };
 
-// Search button event listener
-$(".student-search input").keyup(function() { // Listens for keyup on input instead of click on button.
-	var $foundPersons = $(""); // Create empty object to store found persons.
-	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case.
-
-	// Loop through each student and check name and email for match with searchInputText.
-	$students.each(function() {
-		var studentNameText = $(this).find($studentName).text().toLowerCase(); // Get name of current student in loop in lower case.
-		var studentEmailText = $(this).find($studentEmail).text().toLowerCase(); // Get email of current student in loop in lower case.
-
-		// If searchInputText matches student name or email, store current student in $foundPersons variable.
-		if (studentNameText.indexOf(searchInputText) !== -1 || studentEmailText.indexOf(searchInputText) !== -1) {
-			$foundPersons = $foundPersons.add(this);
-		}
-	});
-
-	searchResults = $foundPersons; // $foundPersons becomes searchResults for displaying on page.
-	createPaginationDiv(); // Update the pagination div with searchResults as input to create necessary number of pages.
-	displayStudents(0); // Display students within the newly created pagination, starting on the first one.
-});
 
 
+// Create search div.
+createSearchDiv();
 
 // Create initial pagination div. Will not create if searchResults is <= 10.
-createPaginationDiv();
-
-// Show initial page of students, starting on the first one.
-displayStudents(0);
+searchAndUpdate();
