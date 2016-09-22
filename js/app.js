@@ -8,7 +8,7 @@ Tested on current versions of Chrome, Safari, and Firefox.
 
 */
 
-var $students = $(".student-list li"); // Finds all students.
+var $STUDENTS = $(".student-list li"); // Finds all students.
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
 
 
@@ -30,21 +30,21 @@ var searchStudents = function() {
 	var $studentName = $(".student-details h3"); // Find h3 containing student name.
 	var $studentEmail = $(".email"); // Find student email.
 
-	var $foundPersons = $(""); // Create empty object to store found persons.
+	var $foundStudents = $(""); // Create empty object to store found persons.
 	var searchInputText = $(".student-search input").val().toLowerCase(); // Get input text in lower case.
 
 	// Loop through each student and check name and email for match with searchInputText.
-	$students.each(function() {
+	$STUDENTS.each(function() {
 		var studentNameText = $(this).find($studentName).text().toLowerCase(); // Get name of current student in loop in lower case.
 		var studentEmailText = $(this).find($studentEmail).text().toLowerCase(); // Get email of current student in loop in lower case.
 
-		// If searchInputText matches student name or email, store current student in $foundPersons variable.
+		// If searchInputText matches student name or email, store current student in $foundStudents variable.
 		if (studentNameText.indexOf(searchInputText) !== -1 || studentEmailText.indexOf(searchInputText) !== -1) {
-			$foundPersons = $foundPersons.add(this);
+			$foundStudents = $foundStudents.add(this);
 		}
 	});
 
-	return $foundPersons;
+	return $foundStudents;
 };
 
 // Function to call search function then update pagination div.
@@ -95,7 +95,7 @@ var searchAndUpdate = function() {
 var turnPage = function(startingStudent) {
 	var studentsToDisplay = searchStudents();
 
-	$students.hide(); // Hides all students first.
+	$STUDENTS.hide(); // Hides all students first.
 
 	// Set endingStudent to startingStudent + 10 unless at the end of the searchResults
 	var endingStudent;
