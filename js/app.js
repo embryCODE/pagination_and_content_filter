@@ -12,6 +12,7 @@ var $STUDENTS = $(".student-list li"); // Finds all students.
 var studentsPerPage = 10; // Entered here as variable so it can be changed if desired.
 
 
+
 // Function to create search div.
 var createSearchDiv = function() {
 	var $searchDiv = $('<div class="student-search"></div>');
@@ -20,12 +21,13 @@ var createSearchDiv = function() {
 	$searchDiv.append($searchInput);
 	// $searchDiv.append($searchButton); // No need for the search button with instant search results.
 	$(".page-header").append($searchDiv);
+
 	// Bind searchStudents to any change on the search input.
 	$(".student-search input").on("input", searchAndUpdate);
 		// NOTE: I tried listening for "keyup" but the arrow keys triggered the event. Listening for "change" was fine except you had to hit enter to do the search. on("input") was the best option to achieve a search on every keystroke while ignoring arrow keys.
 };
 
-// Function to search students.
+// Function to search students. Returns found students.
 var searchStudents = function() {
 	var $studentName = $(".student-details h3"); // Find h3 containing student name.
 	var $studentEmail = $(".email"); // Find student email.
@@ -49,10 +51,9 @@ var searchStudents = function() {
 
 // Function to call search function then update pagination div.
 var searchAndUpdate = function() {
-	var studentsToDisplay = searchStudents();
+	var studentsToDisplay = searchStudents(); // Actual search happens here.
 
-	// First, remove previous pagination div.
-	$(".pagination").remove();
+	$(".pagination").remove(); // Remove previous pagination div.
 
 	// Calculate number of pages necessary.
 	var necessaryPages = Math.ceil(studentsToDisplay.length / studentsPerPage);
@@ -86,9 +87,11 @@ var searchAndUpdate = function() {
 			$paginationLink.click(setActivePage);
 		}
 
+		// Append the pagination div to the end of the student list.
 		$(".student-list").append($paginationDiv);
 	}
-	turnPage(0); // Sets page to page 1.
+	// Set page to page 1. Without this, a list of all students is returned.
+	turnPage(0);
 };
 
 // Select a page of students and update range indicator.
@@ -97,7 +100,7 @@ var turnPage = function(startingStudent) {
 
 	$STUDENTS.hide(); // Hides all students first.
 
-	// Set endingStudent to startingStudent + 10 unless at the end of the searchResults
+	// Set endingStudent to startingStudent + 10 unless at the end of the searchResults.
 	var endingStudent;
 	if ((startingStudent + studentsPerPage) >= studentsToDisplay.length) {
 		endingStudent = studentsToDisplay.length;
@@ -105,10 +108,10 @@ var turnPage = function(startingStudent) {
 		endingStudent = startingStudent + 10;
 	}
 
-	// Show selected students
+	// Show selected students by fading in.
 	studentsToDisplay.slice(startingStudent, endingStudent).fadeIn(); // fadeIn() creates the subtle animation.
 
-	// Update range indicator
+	// Update range indicator.
 	$("#range-indicator").remove(); // Remove previous range indicator.
 	var $rangeIndicator = $('<div id="range-indicator"></div>'); // Initialize range indicator div.
 	if (studentsToDisplay.length === 0) {
@@ -121,7 +124,7 @@ var turnPage = function(startingStudent) {
 	$(".page-header h2").after($rangeIndicator);
 };
 
-// Select page by adding .active class and calling displayStudents with starting student.
+// Add .active class and turn page. Pass startingStudent to turnPage as an argument.
 var setActivePage = function(e) {
 	e.preventDefault();
 	var linkNumber = this.text; // Get desired page using text of clicked link.
